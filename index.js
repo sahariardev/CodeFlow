@@ -11,9 +11,9 @@ const PORT = process.env.PORT || 7000;
 app.use(cors())
 app.use(express.json());
 
-app.post('/run', (req, res) => {
+app.post('/run', async (req, res) => {
     const code = req.body.code;
-    const result = executeCode(code, 'JAVA');
+    const result = await executeCode(code, 'JAVA');
 
     return res.json({message: result});
 });

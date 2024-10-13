@@ -8,7 +8,7 @@ export const executeCode = async (code) => {
         const className = extractClassName(code);
         const path = `${className}.java`;
         await writeClassName(path, code);
-        return await run(path, className);
+        return await run(path, className, 5000);
 
     } catch (error) {
         return error.toString();
