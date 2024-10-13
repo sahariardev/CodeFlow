@@ -2,6 +2,7 @@ import express from 'express';
 import http from 'http';
 import dotenv from 'dotenv';
 import cors from 'cors'
+import executeCode from "./code.executor.service.js";
 
 dotenv.config();
 
@@ -12,7 +13,9 @@ app.use(express.json());
 
 app.post('/run', (req, res) => {
     const code = req.body.code;
+    const result = executeCode(code, 'JAVA');
 
+    return res.json({message: result});
 });
 
 http.createServer(app).listen(PORT, () => {

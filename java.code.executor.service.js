@@ -1,20 +1,38 @@
 import fs from 'fs';
 import {spawn} from 'child_process';
+import path from 'path';
 
 export const executeCode = async (code) => {
+    await cleanUpExistingCode('./');
     try {
         const className = extractClassName(code);
         const path = `${className}.java`;
         await writeClassName(path, code);
-        const out = await run(path, className);
-
-        return out;
+        return await run(path, className);
 
     } catch (error) {
-        console.log("error is " + error);
+        return error.toString();
     }
 }
 
+const cleanUpExistingCode = async (directory) => {
+    try {
+        const files = fs.readdirSync(directory, { withFileTypes: true });
+
+        for (const file of files) {
+            const fullPath = path.join(directory, file.name);
+
+            // Check if it's a directory, recursively call the function
+             if (file.isFile() && (file.name.endsWith('.class') || file.name.endsWith('.java'))) {
+                // Delete .class or .java files
+                fs.unlinkSync(fullPath);
+                console.log(`Deleted: ${fullPath}`);
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
 const extractClassName = (code) => {
     const classNameRegex = /public\s+class\s+(\w+)/;
     const match = code.match(classNameRegex);
@@ -30,12 +48,12 @@ const writeClassName = async (path, code) => {
     await fs.writeFileSync(path, code);
 }
 
-const run = async (path, className) => {
+const run = async (path, className, maxTimeToRun) => {
     return new Promise((resolve, reject) => {
         const javac = spawn('javac', [path]);
 
         javac.stderr.on('data', (error) => {
-            console.log(error.toString());
+            reject(error.toString());
         })
 
         javac.on('close', (compileCode, err) => {
@@ -44,6 +62,14 @@ const run = async (path, className) => {
             }
 
             const java = spawn('java', ['-cp', './', className]);
+
+            let isTimeoutReached = false;
+
+            const timeout = setTimeout(() => {
+                isTimeoutReached = true;
+                java.kill(); // Kill the Java process if timeout is reached
+                reject('Execution time limit exceeded');
+            }, maxTimeToRun);
 
             let result = '';
             java.stdout.on('data', (data) => {
@@ -55,6 +81,10 @@ const run = async (path, className) => {
             });
 
             java.on('close', (runCode) => {
+                clearTimeout(timeout); // Clear the timeout if the process finishes
+
+                if (isTimeoutReached) return;
+
                 if (runCode !== 0) {
                     reject('Java code execution failed');
                 }
@@ -64,20 +94,3 @@ const run = async (path, className) => {
         });
     });
 }
-
-const code = `
-    public class AddTwoNumbers {
-    public static void main(String[] args) {
-        // Hardcoded values
-        double firstNumber = 5.0;  // First number
-        double secondNumber = 10.0 // Second number
-
-        // Add the two numbers
-        double sum = firstNumber + secondNumber;
-
-        // Display the result
-        System.out.println("The sum of " + firstNumber + " and " + secondNumber + " is: " + sum);
-    }
-}
-`
-console.log(await executeCode(code));
