@@ -7,7 +7,7 @@ import executeCode from "./code.executor.service.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 7000;
+const PORT = process.env.SERVER_PORT || 7000;
 app.use(cors())
 app.use(express.json());
 
