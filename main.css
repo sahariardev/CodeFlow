@@ -1,0 +1,20 @@
+.code-executor-container {
+    display: flex;
+    align-items: stretch;
+}
+
+.play-button {
+    height: 100%;
+    font-size: 16px;
+    padding: 30px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.result {
+    width: 100%;
+    border: 1px solid #ccc;
+    resize: none;
+}

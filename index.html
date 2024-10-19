@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMirror Java Example</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css">
+    <link rel="stylesheet" href="main.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .editor {
+            border: 1px solid #ccc;
+            margin: 20px 0;
+            width: 400px;
+        }
+        .container {
+            width: 600px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="code-container">
+       <textarea id="code" name="code" class="editor">
+public class HelloWorld {
+     public static void main(String [] args) {
+           System.out.println("Hello World");
+     }
+}
+       </textarea>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/clike/clike.min.js"></script>
+<script src="codeflow.js"></script>
+<script>
+    initializeCodeFlow("code");
+</script>
+
+</body>
+</html>
