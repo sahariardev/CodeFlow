@@ -1,7 +1,6 @@
 
 function initializeCodeFlow(codeContainerId) {
     const container = document.createElement("div");
-    container.classList.add();
 
     const textAreaElem = document.getElementById(codeContainerId);
     const newTextArea = textAreaElem.cloneNode(true);
@@ -36,10 +35,16 @@ function initializeCodeFlow(codeContainerId) {
     const outPutElem = codeExecutorContainer.querySelector('.result');
 
     playBtnElem.addEventListener('click', (e) => {
+        if (container.classList.contains('spinner')) {
+            return;
+        }
+
         const url = 'https://codeflow-latest.onrender.com/run';
         const data = {
             code: editor.getValue()
         };
+
+        container.classList.add('spinner');
 
         fetch(url, {
             method: 'POST',
@@ -51,10 +56,12 @@ function initializeCodeFlow(codeContainerId) {
             .then(response => response.json())
             .then(data => {
                 outPutElem.innerHTML = data.message;
+                container.classList.remove('spinner');
             })
             .catch((error) => {
                 console.log(error)
                 outPutElem.innerHTML = error.message.toString();
+                container.classList.remove('spinner');
             });
     });
 }
